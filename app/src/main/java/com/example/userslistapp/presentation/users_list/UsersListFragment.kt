@@ -2,9 +2,11 @@ package com.example.userslistapp.presentation.users_list
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -20,10 +22,20 @@ class UsersListFragment : Fragment(R.layout.fragment_users_list) {
     private val binding by viewBinding(FragmentUsersListBinding::bind)
     private val viewModel by viewModels<UsersListViewModel>()
     private var adapter: UsersListAdapter? = null
+    private var scrollPosition = 0 //save so when nav back don't lose position
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupRecyclerView()
         setupSwipeRefresh()
         observeUsersResponse()
+        if (savedInstanceState != null) {
+            scrollPosition = savedInstanceState.getInt("SCROLL_POSITION")
+            saveScrollPosition()
+        }
+    }
+
+    private fun saveScrollPosition() {
+        scrollPosition = (binding.rvUsers.layoutManager as LinearLayoutManager)
+            .findFirstVisibleItemPosition()
     }
 
     private fun setupRecyclerView() {
@@ -56,6 +68,7 @@ class UsersListFragment : Fragment(R.layout.fragment_users_list) {
 
     private fun showUsers(users: List<User>) {
         adapter?.submitData(users)
+        binding.rvUsers.scrollToPosition(scrollPosition)
         binding.rvUsers.visibility = View.VISIBLE
         binding.progressBar.visibility = View.GONE
         binding.emptyTextView.visibility = View.GONE
@@ -71,7 +84,15 @@ class UsersListFragment : Fragment(R.layout.fragment_users_list) {
     }
 
     private fun navToDetails(user: User) {
+        saveScrollPosition()
+        val bundle = bundleOf(Pair("user_id", user.id))
+        findNavController().navigate(R.id.nav_to_details, bundle)
+    }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.refreshData()
+        observeUsersResponse()
     }
 
     override fun onDestroy() {
