@@ -67,8 +67,6 @@ dependencies {
     ksp(libs.hiltCompiler)
     ksp(libs.hiltAndroidCompiler)
     implementation(libs.viewbindingpropertydelegate)
-    implementation(libs.paging.runtime)
-    implementation(libs.paging.compose)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
     implementation(libs.room.paging)
