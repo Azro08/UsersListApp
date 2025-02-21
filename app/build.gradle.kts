@@ -64,11 +64,14 @@ dependencies {
     implementation(libs.lifecycleRuntimeKtx)
     implementation(libs.lifecycleViewmodelKtx)
     implementation(libs.hiltAndroid)
+    androidTestImplementation(libs.androidx.test.core)
     ksp(libs.hiltCompiler)
     ksp(libs.hiltAndroidCompiler)
     implementation(libs.viewbindingpropertydelegate)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
-    implementation(libs.room.paging)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.androidx.test.core)
 
 }
